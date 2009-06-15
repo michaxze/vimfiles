@@ -240,7 +240,7 @@ if has("gui_running")
   set transparency=8
 endif
 
-set guioptions=egmrLt
+set guifont=PanicSans:h15
 
 " Window size appearance
 augroup guiappearance
