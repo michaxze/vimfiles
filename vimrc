@@ -111,7 +111,7 @@
   set listchars=tab:>-,trail:·,eol:$
   nmap <silent> <leader>s :set nolist!<CR>
 
-  " ack
+" ack
   set grepprg=ack
   set grepformat=%f:%l:%m
  
@@ -206,7 +206,7 @@
   let NERDTreeHighlightCursorline = 1
   let NERDTreeShowBookmarks = 1
   let NERDTreeShowHidden = 1
-  let NERDTreeIgnore = ['.vim$', '\~$', '.svn$', '.git$', '.DS_Store']
+  let NERDTreeIgnore = ['.vim$', '\~$', '.svn$', '\.git$', '.DS_Store']
   nmap <F2> :NERDTreeToggle<CR>
  
 " NERDComment {{{
@@ -345,9 +345,17 @@ if has("autocmd")
   augroup smv
     autocmd BufRead,BufNewFile          *.smv set filetype=smv 
   augroup END
+  
+  " AS3
+  augroup as3
+    autocmd BufRead *.as set filetype=actionscript
+  augroup END
 
  au BufNewFile,BufRead *.yaml,*.yml so ~/.vim/plugin/yaml.vim
  au! BufRead,BufNewFile *.haml         setfiletype haml 
  au BufRead,BufNewFile *.js set ft=javascript.jquery
 endif
 
+" Jump to test
+compiler rubyunit
+nmap <Leader>fd :cf /tmp/autotest.txt<cr> :compiler rubyunit<cr>
