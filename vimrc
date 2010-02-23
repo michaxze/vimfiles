@@ -111,6 +111,11 @@
   set listchars=tab:>-,trail:·,eol:$
   nmap <silent> <leader>s :set nolist!<CR>
 
+" Ruby Autocomplete stuff
+  autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+  autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+  autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+
 " ack
   set grepprg=ack
   set grepformat=%f:%l:%m
