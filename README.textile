@@ -1,7 +1,8 @@
 h1. Install
 
-git clone git://github.com:twhitchu/vimfiles.git ~/.vim
+git clone git://github.com/jsmestad/vimfiles.git ~/.vim
 ln -s ~/.vim/vimrc ~/.vimrc
+ln -s ~/.vim/gvimrc ~/.gvimrc
 
 
-MIT License &copy; 2009 Tom Whitchurch
+MIT License &copy; 2009 Justin Smestad
