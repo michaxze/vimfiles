@@ -1,3 +1,7 @@
+" Runtime load bundle directory
+call pathogen#runtime_prepend_subdirectories(expand('~/.vim/bundles'))
+call pathogen#runtime_append_all_bundles()
+
 " Disable vi compatibility
 set nocompatible
 
@@ -18,15 +22,18 @@ syntax on
 " Use spaces instead of tabs at the start of the line
 set smarttab
 set expandtab
- 
-" Highlight the line that the cursor is on.
-set cursorline
+
+" No backups
+set nobackup
 
 " Always show line numbers
 set number
  
 " Reset the window title in non-GUI mode to something a little more helpful.
 set title
+
+" Set to auto read when a file is changed from an external source
+set autoread
  
 " Use a manual foldmethod so that folds persist in files
 set foldmethod=marker
@@ -37,128 +44,44 @@ set wildmode=list:longest
 
 " A split will default to being creating under or to the right of the current.
 set splitbelow splitright
- 
+
+" Make backspace work in insert mode
+set backspace=indent,eol,start
+
 " Make NERDCommenter add a space before/after comments
 let NERDSpaceDelims=1
 
 " Let Syntastic throw down error gang signs
 let g:syntastic_enable_signs=1
 
-" Fancy statusline {{{
-" All the code in this fold from the following 3 blog posts:
-" http://got-ravings.blogspot.com/2008/08/vim-pr0n-making-statuslines-that-own.html
-" http://got-ravings.blogspot.com/2008/10/vim-pr0n-conditional-stl-highlighting.html
-" http://got-ravings.blogspot.com/2008/10/vim-pr0n-statusline-whitespace-flags.html
-" + the help file for vim-fugitive
+" Set map leader
+let mapleader = ","
+
+" theme
+set background=dark
+if has("gui_running")
+  colorscheme slate
+  set columns=101 lines=60
+  set transparency=8
+endif
  
-" Always display a statusline
-set laststatus=2
- 
-"Add the variable with the name a:varName to the statusline. Highlight it as
-"'error' unless its value is in a:goodValues (a comma separated string)
-function! AddStatuslineFlag(varName, goodValues)
-  set statusline+=[
-  set statusline+=%#error#
-  exec "set statusline+=%{RenderStlFlag(".a:varName.",'".a:goodValues."',1)}"
-  set statusline+=%*
-  exec "set statusline+=%{RenderStlFlag(".a:varName.",'".a:goodValues."',0)}"
-  set statusline+=]
-endfunction
- 
-"returns a:value or ''
-"
-"a:goodValues is a comma separated string of values that shouldn't be
-"highlighted with the error group
-"
-"a:error indicates whether the string that is returned will be highlighted as
-"'error'
-function! RenderStlFlag(value, goodValues, error)
-  let goodValues = split(a:goodValues, ',')
-  let good = index(goodValues, a:value) != -1
-  if (a:error && !good) || (!a:error && good)
-    return a:value
-  else
-    return ''
-  endif
-endfunction
- 
-" Fancy statusline.
-set statusline=%t "tail of the filename
-set statusline+=%m "modified flag
-call AddStatuslineFlag('&ff', 'unix') "fileformat
-call AddStatuslineFlag('&fenc', 'utf-8') "file encoding
-set statusline+=%h "help file flag
-set statusline+=%r "read only flag
-set statusline+=%y "filetype
- 
-" From syntastic plugin
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
- 
-" From Fugitive plugin
-set statusline+=%{fugitive#statusline()}
- 
-set statusline+=%#error# "display a warning if &et is wrong, or we have mixed-indenting
-set statusline+=%{StatuslineTabWarning()} "warnings for mixed tabs and other issues
-set statusline+=%{StatuslineTrailingSpaceWarning()} "warning if there is any trailing whitespace in the file
-set statusline+=%*
-set statusline+=%= "left/right separator
-set statusline+=%c, "cursor column
-set statusline+=%l/%L "cursor line/total lines
-set statusline+=\ %p "percent through file
- 
-"recalculate the tab warning flag when idle and after writing
-autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
- 
-"return '[&et]' if &et is set wrong
-"return '[mixed-indenting]' if spaces and tabs are used to indent
-"return an empty string if everything is fine
-function! StatuslineTabWarning()
-    if !exists("b:statusline_tab_warning")
-        let tabs = search('^\t', 'nw') != 0
-        let spaces = search('^ ', 'nw') != 0
- 
-        if tabs && spaces
-            let b:statusline_tab_warning = '[mixed-indenting]'
-        elseif (spaces && !&et) || (tabs && &et)
-            let b:statusline_tab_warning = '[&et]'
-        else
-            let b:statusline_tab_warning = ''
-        endif
-    endif
-    return b:statusline_tab_warning
-endfunction
- 
-"recalculate the trailing whitespace warning when idle, and after saving
-autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
- 
-"return '[\s]' if trailing white space is detected
-"return '' otherwise
-function! StatuslineTrailingSpaceWarning()
-    if !exists("b:statusline_trailing_space_warning")
-        if search('\s\+$', 'nw') != 0
-            let b:statusline_trailing_space_warning = '[\s]'
-        else
-            let b:statusline_trailing_space_warning = ''
-        endif
-    endif
-    return b:statusline_trailing_space_warning
-endfunction
- 
-" }}}
+set guifont=Monaco:h15
 
 " My anal whitespace rules and commands {{{
- 
+
 " Show trailing whitespace as little blue dots, and also make hard tabs visible.
-set list listchars=tab:>·,trail:·
- 
+" set list listchars=tab:>·,trail:·
+
+" Catch trailing whitespace ,s
+set listchars=tab:>-,trail:·,eol:$
+nmap <silent> <leader>s :set nolist!<CR>
+
 " Command to collapse all multi-line occurrences of whitespace into one line.
 cabbrev dpcompact %s/^\n\+/\r/
- 
+
 " Command to trim any trailing whitespace from lines.
 cabbrev dpunwhite %s/\s\+$//
- 
+
 " }}}
 
 " Custom normal/insert mode mappings {{{
@@ -177,6 +100,10 @@ nmap <C-k> <C-W>k
 nmap <C-l> <C-W>l
 nmap <C-h> <C-W>h
  
+" Make it easy to update/reload .vimrc
+nmap <leader>s :source ~/.vimrc<CR>
+nmap <leader>vi :tabe ~/.vimrc<CR>
+
 " }}}
 
 " Search Related options {{{
@@ -229,6 +156,16 @@ vnoremap <silent> # :<C-U>
  
 " }}}
  
+" Language Options {{{
+
+autocmd FileType ruby set omnifunc=rubycomplete#Complete
+autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+
+
+" }}}
+
 " Ruby specific options {{{
  
 " This will highlight trailing whitespace and tabs preceded by a space character
@@ -237,13 +174,10 @@ let ruby_space_errors = 1
 " Syntax highlight ruby operators (+, -, etc)
 let ruby_operators = 1
  
-augroup myrubyfiletypes
-" Clear old autocmds in this group
-        autocmd!
- 
-" autoindent with two spaces, always expand tabs
-        autocmd FileType ruby,eruby,yaml set ai sw=2 sts=2 ts=2 et
-augroup END
+" Ruby Autocomplete stuff
+autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
  
 " Specky bindings {{{
 let g:speckyRunRdocKey = ",sr"
@@ -265,10 +199,36 @@ let g:rails_menu=2
 let g:rails_default_file='config/routes.rb'
  
 " use Safari to preview
-command -bar -nargs=1 OpenURL :!open <args>
- 
+"command -bar -nargs=1 OpenURL :!open <args>
+
+" Turn off rails bits of statusbar
+let g:rails_statusline=0
+
+" NERDTree {{{
+  let NERDChristmasTree = 1
+  let NERDTreeHighlightCursorline = 1
+  let NERDTreeShowBookmarks = 1
+  let NERDTreeShowHidden = 1
+  let NERDTreeIgnore = ['.vim$', '\~$', '.svn$', '\.git$', '.DS_Store']
+  nmap <F2> :NERDTreeToggle<CR>
+  map nt :NERDTreeToggle<CR>
 " }}}
- 
+
+" TagList {{{
+  let Tlist_GainFocus_On_ToggleOpen = 1
+  let Tlist_Process_File_Always = 1
+  let Tlist_Inc_Winwidth = 0
+  let Tlist_Enable_Fold_Column = 0 "Disable drawing the fold column
+  let Tlist_Use_SingleClick = 1 "Single click tag selection
+  let Tlist_Use_Right_Window = 1
+  let Tlist_Exit_OnlyWindow = 1 "Exit if only the taglist is open
+  let Tlist_File_Fold_Auto_Close = 1 " Only auto expand the current file
+  let Tlist_Ctags_Cmd = '/opt/local/bin/ctags'
+  nmap <F3> :TlistToggle<CR>
+  " nmap <F4> :BufExplorer<CR>
+  " nmap <F5> :bw<CR>
+" }}}
+
 " GUI related options {{{
  
 " Don't show me a toolbar in a GUI Version of Vim
@@ -281,16 +241,27 @@ set guioptions-=T
  
 " Use console dialogs in GUI Vim, the dialogue boxes are just silly
 if has("gui_gtk")
-        set guioptions+=c
+  set guioptions+=c
 endif
  
-" Nice window title
-if has('title') && (has('gui_running') || &title)
-        set titlestring=
-        set titlestring+=%f\ " file name
-        set titlestring+=%h%m%r%w " flags
-        set titlestring+=\ -\ %{v:progname} " program name
-        set titlestring+=\ -\ %{substitute(getcwd(),\ $HOME,\ '~',\ '')} " working directory
-endif
- 
-"}}}
+" }}}
+
+" Status Line {{{
+
+set laststatus=2
+set statusline=\ "
+set statusline+=%f\ " file name
+set statusline+=[
+set statusline+=%{strlen(&ft)?&ft:'none'}, " filetype
+set statusline+=%{&fileformat}] " file format
+set statusline+=%h%1*%m%r%w%0* " flag
+set statusline+=%{fugitive#statusline()} " git status
+set statusline+=%= " right align
+set statusline+=%-14.(%l,%c%V%)\ %<%P " offset
+" Title: update the title of the window?
+set title
+" Title String: what will actually be displayed
+set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
+
+" }}}
+
