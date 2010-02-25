@@ -8,10 +8,7 @@ set nocompatible
 " No need for the Error Bell in any form, thanks
 set noerrorbells
 set novisualbell
- 
-" Use filetype appropriate indent
-filetype plugin indent on
- 
+  
 " Automatically indent
 set autoindent
 set smartindent
@@ -21,6 +18,13 @@ syntax on
 
 " Use spaces instead of tabs at the start of the line
 set smarttab
+
+filetype on " Enable filetype detection
+filetype indent on " Enable filetype-specific indenting
+filetype plugin on " Enable filetype-specific plugins
+
+set tabstop=2
+set shiftwidth=2
 set expandtab
 
 " No backups
@@ -56,16 +60,6 @@ let g:syntastic_enable_signs=1
 
 " Set map leader
 let mapleader = ","
-
-" theme
-set background=dark
-if has("gui_running")
-  colorscheme slate
-  set columns=101 lines=60
-  set transparency=8
-endif
- 
-set guifont=Monaco:h15
 
 " My anal whitespace rules and commands {{{
 
@@ -163,6 +157,7 @@ autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 
+au BufRead,BufNewFile jquery.*.js set ft=javascript syntax=jquery
 
 " }}}
 
@@ -203,6 +198,7 @@ let g:rails_default_file='config/routes.rb'
 
 " Turn off rails bits of statusbar
 let g:rails_statusline=0
+" }}}
 
 " NERDTree {{{
   let NERDChristmasTree = 1
@@ -254,8 +250,8 @@ set statusline+=%f\ " file name
 set statusline+=[
 set statusline+=%{strlen(&ft)?&ft:'none'}, " filetype
 set statusline+=%{&fileformat}] " file format
-set statusline+=%h%1*%m%r%w%0* " flag
 set statusline+=%{fugitive#statusline()} " git status
+set statusline+=%h%1*%m%r%w%0* " flag
 set statusline+=%= " right align
 set statusline+=%-14.(%l,%c%V%)\ %<%P " offset
 " Title: update the title of the window?
