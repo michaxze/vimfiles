@@ -30,6 +30,9 @@ set expandtab
 " No backups
 set nobackup
 
+" Set temporary directory (don't litter local dir with swp/tmp files)
+set directory=/tmp/
+
 " Always show line numbers
 set number
  
@@ -60,6 +63,13 @@ let g:syntastic_enable_signs=1
 
 " Set map leader
 let mapleader = ","
+
+" mini buffer explorer shiz
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1 
+let g:miniBufExplSplitBelow = 0
 
 " My anal whitespace rules and commands {{{
 
