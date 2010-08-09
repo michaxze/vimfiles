@@ -44,6 +44,9 @@ set autoread
  
 " Use a manual foldmethod so that folds persist in files
 set foldmethod=marker
+
+" Maps autocomplete to tab
+" imap <Tab> <C-P>
  
 " Tab completion in command mode shows all possible completions, shell style.
 set wildmenu
